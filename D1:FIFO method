@@ -1,0 +1,52 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+#define MAX_PAGE_FRAMES 3
+
+int page_faults = 0;
+
+void print_pages(int pages[], int size) {
+  for (int i = 0; i < size; i++) {
+    printf("%d ", pages[i]);
+  }
+  printf("\n");
+}
+
+bool is_page_fault(int page, int pages[], int size) {
+  for (int i = 0; i < size; i++) {
+    if (pages[i] == page) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void page_replacement(int page, int pages[], int size) {
+  for (int i = 0; i < size - 1; i++) {
+    pages[i] = pages[i + 1];
+  }
+  pages[size - 1] = page;
+}
+
+int main() {
+  int pages[MAX_PAGE_FRAMES];
+  int reference_sequence[] = {4, 1, 2, 4, 3, 2, 1, 5};
+  int reference_sequence_size = sizeof(reference_sequence) / sizeof(reference_sequence[0]);
+
+  // Initialize page frames
+  for (int i = 0; i < MAX_PAGE_FRAMES; i++) {
+    pages[i] = -1;
+  }
+
+  for (int i = 0; i < reference_sequence_size; i++) {
+    if (is_page_fault(reference_sequence[i], pages, MAX_PAGE_FRAMES)) {
+      page_faults++;
+      page_replacement(reference_sequence[i], pages, MAX_PAGE_FRAMES);
+    }
+    print_pages(pages, MAX_PAGE_FRAMES);
+  }
+
+  printf("Number of page faults: %d\n", page_faults);
+
+  return 0;
+}
